@@ -1,0 +1,6 @@
+[package]
+name = "messy-names"
+version = "0.1.0"
+edition = "2021"
+description = "Normalizes messy name-list files and draws random names from them"
+license = "MIT"

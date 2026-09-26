@@ -84,7 +84,6 @@ the file so you can fix them all in one pass.
 
 ## known limitations
 
-Title-casing is naive: `o'brien` becomes `O'brien`, not `O'Brien`.
 There is no way yet to weight names so some are picked more often
 than others, and re-declaring the same `[category]` twice silently
 merges into it rather than raising an error. See the roadmap for

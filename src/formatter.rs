@@ -136,10 +136,9 @@ fn parse_header(trimmed: &str, line_no: usize, start_col: usize) -> Result<Strin
 
 /// Collapse internal whitespace and title-case a single name.
 ///
-/// This is deliberately simple: it does not special-case apostrophes or
-/// hyphens, so "o'brien" becomes "O'brien" rather than "O'Brien". Anything
-/// smarter needs a small dictionary of exceptions, which belongs in a
-/// later pass rather than the core normalizer.
+/// Apostrophes and hyphens start a new word for capitalization purposes
+/// (so "o'brien" becomes "O'Brien" and "mary-jane" becomes "Mary-Jane"),
+/// but unlike whitespace they are never collapsed or trimmed themselves.
 fn normalize_name(raw: &str) -> String {
     let mut result = String::new();
     let mut capitalize_next = true;
@@ -148,6 +147,11 @@ fn normalize_name(raw: &str) -> String {
             if !result.is_empty() && !result.ends_with(' ') {
                 result.push(' ');
             }
+            capitalize_next = true;
+            continue;
+        }
+        if ch == '\'' || ch == '-' {
+            result.push(ch);
             capitalize_next = true;
             continue;
         }
@@ -198,6 +202,14 @@ mod tests {
         assert_eq!(normalize_name("mary"), "Mary");
         assert_eq!(normalize_name(""), "");
         assert_eq!(normalize_name("   "), "");
+    }
+
+    #[test]
+    fn title_cases_apostrophes_and_hyphens() {
+        assert_eq!(normalize_name("o'brien"), "O'Brien");
+        assert_eq!(normalize_name("D'ANGELO"), "D'Angelo");
+        assert_eq!(normalize_name("mary-jane"), "Mary-Jane");
+        assert_eq!(normalize_name("jean-luc o'neil"), "Jean-Luc O'Neil");
     }
 
     #[test]
